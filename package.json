@@ -1,0 +1,27 @@
+{
+  "name": "nocaptchasolver",
+  "version": "1.0.0",
+  "description": "Solve HCaptcha Challenges With The Power of NoCaptcha's AI Recognition!",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "keywords": [
+    "Hcaptcha",
+    "captcha",
+    "captcha-solver",
+    "anti-captcha"
+  ],
+  "author": "Hammad",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "selenium-webdriver": "^4.4.0",
+    "sync-fetch": "^0.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hammad69275/NoCaptchaSolver.git",
+    "homepage":"https://github.com/Hammad69275/NoCaptchaSolver"
+  }
+}
