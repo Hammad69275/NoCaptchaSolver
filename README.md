@@ -14,9 +14,9 @@
 <h3>Instantiating The Wrapper</h3>
 
 ```js
-const {NoCaptchaSolver} = require("nocaptchasolver")
+const {HCaptchaSolver} = require("nocaptchasolver")
 
-const Solver = new NoCaptchaSolver(UID,API_KEY,USER_AGENT,SITE_KEY,SITE_URL)
+const Solver = new HCaptchaSolver(UID,API_KEY,USER_AGENT,SITE_KEY,SITE_URL)
 
 ```
 
@@ -52,16 +52,20 @@ console.log(Solver.solveLimit)
 <h2>Examples</h2>
 
 ```js
-const {NoCaptchaSolver} = require("nocaptchasolver")
+const {HCaptchaSolver} = require("nocaptchasolver")
 
-const Solver = new NoCaptchaSolver("ccbf7ee84db748a2b4aad654112da128","free-api-b0ec566e....","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com")
+const Solver = new HCaptchaSolver("ccbf7ee84db748a2b4aad654112da128","free-api-b0ec566e....","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com")
 
 async function main()
 { 
    if(Solver.remainingSolves === 0) return
-   let solvedCaptcha = Solver.solve()
+   let solvedCaptcha = await Solver.solve()
    console.log(solvedCaptcha)
 }
 
 main() // { status:1,key:"F0_ey......" }
 ```
+
+<h2>API</h2>
+
+Register on https://nocaptchaai.com/register and join their server to get the API Key and UID

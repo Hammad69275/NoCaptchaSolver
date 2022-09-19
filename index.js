@@ -1,3 +1,3 @@
-const NoCaptchaSolver = require("./src/NoCaptchaSolver")
+const HCaptchaSolver = require("./src/HCaptcha")
 
-exports.NoCaptchaSolver = NoCaptchaSolver
+exports.HCaptchaSolver = HCaptchaSolver

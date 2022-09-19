@@ -4,18 +4,18 @@ const chrome = require('selenium-webdriver/chrome');
 const webdriver = require('selenium-webdriver');
 const {Builder} = require('selenium-webdriver');
 
-module.exports = class CaptchaSolver{
+module.exports = class HCaptchaSolver{
     
     constructor(UID,API_KEY,USER_AGENT,SITE_KEY,SITE_URL){
         
         this.uid = UID
         this.key = API_KEY
-        this.keyType = API_KEY.startsWith("free") ? "free" : "pro"
         this.userAgent = USER_AGENT
         this.siteurl = SITE_URL
         this.sitekey = SITE_KEY
-        this.solveLimit = fetchSync(`https://${this.keyType}.nocaptchaai.com/api/account/balance`,{headers:{ uid:UID,apikey:API_KEY }}).json().limit
-        this.usedSolves = fetchSync(`https://${this.keyType}.nocaptchaai.com/api/account/balance`,{headers:{ uid:UID,apikey:API_KEY }}).json().used
+        this.solveLimit = fetchSync(`https://free.nocaptchaai.com/api/account/balance`,{headers:{ uid:UID,apikey:API_KEY }}).json().limit || 100
+        this.keyType = fetchSync(`https://free.nocaptchaai.com/api/account/balance`,{headers:{ uid:UID,apikey:API_KEY }}).json().type == "paid" ? "pro":"free"
+        this.usedSolves = fetchSync(`https://free.nocaptchaai.com/api/account/balance`,{headers:{ uid:UID,apikey:API_KEY }}).json().used || 0
         this.hcaptchaVersion = fetchSync("https://hcaptcha.com/1/api.js?render=explicit&onload=hcaptchaOnLoad",
         {
             headers:{
@@ -35,13 +35,8 @@ module.exports = class CaptchaSolver{
         return this.solveLimit - this.usedSolves
     }
     async solve(rqdata){
-        
-        if(this.usedSolves == this.solveLimit) {
-            if(this.keyType === "free") return {status:0,message:"Your Free Plan Has Reached Its Limit. Please Contact ai@nocaptchaai.com For A Paid Plan"}
-            else return {status:0,message:"Your Paid Plan Has Reached Its Limit. Please Buy Another Plan To Continue Solving Captchas"}
-        }
-        
         let captcha = await this._getCaptcha(rqdata)
+        if(captcha.generated_pass_UUID) return {status:1,key:captcha.generated_pass_UUID}
         if(!captcha.key) return {status:0}
         let captcha_solution = await this._solveCaptcha(captcha)
         if(captcha_solution.status) return captcha_solution
@@ -124,6 +119,11 @@ module.exports = class CaptchaSolver{
     
     async _solveCaptcha(captcha){
         
+        if(this.usedSolves == this.solveLimit) {
+            if(this.keyType === "free") return {status:0,message:"Your Free Plan Has Reached Its Limit. Please Contact ai@nocaptchaai.com For A Paid Plan"}
+            else return {status:0,message:"Your Paid Plan Has Reached Its Limit. Please Buy Another Plan To Continue Solving Captchas"}
+        }
+
         let {key,tasklist,requester_question} = captcha
         let images = {}
         let answers = {}
@@ -247,6 +247,36 @@ module.exports = class CaptchaSolver{
 
         return n
     }
+}
+
+function makeWidgetId(length) {
+    var result           = '';
+    var characters       = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
+
+function serialize(obj, prefix) {
+    var str = [],
+      p;
+    for (p in obj) {
+      if (obj.hasOwnProperty(p)) {
+        var k = prefix ? prefix + "[" + p + "]" : p,
+          v = obj[p];
+        str.push((v !== null && typeof v === "object") ?
+          serialize(v, k) :
+          encodeURIComponent(k) + "=" + encodeURIComponent(v));
+      }
+    }
+    return str.join("&");
+  }
+  
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function makeWidgetId(length) {
