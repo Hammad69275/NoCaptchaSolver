@@ -176,7 +176,6 @@ module.exports = class HCaptchaSolver{
         }
         )
         postImages = await postImages.json()
-
         if(!postImages.url && !(postImages.status == "solved")) {
             await this._log("DONE","Unable To Submit Images For Recognition")
             return {status:0,message:"Unable To Submit Images For Recognition"}
@@ -188,16 +187,18 @@ module.exports = class HCaptchaSolver{
                 let result = await fetch(postImages.url)
                 result = await result.json()
                 if(!(result.status == "solved")){
-                    sleep(2000)
+                    await sleep(2000)
                 }else {
                     recognizedImages = result.solution
                 }
             }
-
-        }else recognizedImages = postImages.solution
+            
+        }else {
+            recognizedImages = postImages.solution
+        }
         
         for(let i = 0;i < tasklist.length;i++){
-            answers[tasklist[i].task_key] = recognizedImages.includes(i.toString()) ? "true":"false"
+            answers[tasklist[i].task_key] = recognizedImages.includes(i) ? "true":"false"
         }
         await this._log("DONE","Images Retrieved!")
     
