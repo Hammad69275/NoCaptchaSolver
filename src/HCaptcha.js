@@ -176,7 +176,7 @@ module.exports = class HCaptchaSolver{
         }
         )
         postImages = await postImages.json()
-	    console.log(postImages)
+
         if(!postImages.url && !(postImages.status == "solved")) {
             await this._log("DONE","Unable To Submit Images For Recognition")
             return {status:0,message:"Unable To Submit Images For Recognition"}
