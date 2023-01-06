@@ -1,4 +1,3 @@
-const fetchSync = require("sync-fetch")
 const fetch = require("node-fetch")
 const chrome = require('selenium-webdriver/chrome');
 const webdriver = require('selenium-webdriver');
@@ -13,30 +12,61 @@ module.exports = class HCaptchaSolver{
         this.userAgent = USER_AGENT
         this.siteurl = SITE_URL
         this.sitekey = SITE_KEY
-        this.solveLimit = fetchSync(`https://free.nocaptchaai.com/api/account/balance`,{headers:{ uid:UID,apikey:API_KEY }}).json().limit || 100
-        this.keyType = fetchSync(`https://free.nocaptchaai.com/api/account/balance`,{headers:{ uid:UID,apikey:API_KEY }}).json().type == "paid" ? "pro":"free"
-        this.usedSolves = fetchSync(`https://free.nocaptchaai.com/api/account/balance`,{headers:{ uid:UID,apikey:API_KEY }}).json().used || 0
-        this.hcaptchaVersion = fetchSync("https://hcaptcha.com/1/api.js?render=explicit&onload=hcaptchaOnLoad",
-        {
-            headers:{
-                "accept": "*/*",
-                "accept-language": "en-US,en;q=0.9",
-                "accept-encoding": "gzip, deflate, br",
-                "sec-fetch-dest": "script",
-                "sec-ch-ua-platform": "Windows",
-                "user-agent": this.userAgent,
-                "referer": this.siteurl,
-            }
-        }
-        ).text().split("assetUrl")[1].split("https://newassets.hcaptcha.com/captcha/v1/")[1].split("/static")[0]
-        this.hsw
+        this.initialized = false
+        this.httpHeaders = { uid:UID,apikey:API_KEY }
+        this.hsw = null
         this.isLoggingEnabled = ENABLE_LOGGER || false,
         this.logFunction = LOGGER_FUNCTION
+        this.initPromise = this.init();
     }
     get remainingSolves(){
         return this.solveLimit - this.usedSolves
     }
+    async init(){
+        if(this.initialized) 
+            return
+        else if(this.initPromise)
+            return this.initPromise
+
+        await this._log("PROCESSING","Initializing HCaptcha Solver...")
+        let { plan, endpoint } = await fetch("https://manage.nocaptchaai.com/api/user/get_endpoint",{headers:this.httpHeaders}).then(res => res.json())
+        this.keyType = plan == "paid" ? "pro":"free"
+        this.solveEndpoint = endpoint
+        this.balanceEndpoint = this.keyType == "free" ? "https://free.nocaptchaai.com/api/user/free_balance":"https://manage.nocaptchaai.com/api/user/get_balance"
+
+        await Promise.all([
+            fetch(this.balanceEndpoint,{headers:this.httpHeaders})
+                .then(res => res.json())
+                .then(({ dailyLimit, used }) => {
+                    this.solveLimit = dailyLimit || 100
+                    this.usedSolves = used || 0
+                }),
+            fetch("https://hcaptcha.com/1/api.js?render=explicit&onload=hcaptchaOnLoad",
+            {
+                headers:{
+                    "accept": "*/*",
+                    "accept-language": "en-US,en;q=0.9",
+                    "accept-encoding": "gzip, deflate, br",
+                    "sec-fetch-dest": "script",
+                    "sec-ch-ua-platform": "Windows",
+                    "user-agent": this.userAgent,
+                    "referer": this.siteurl,
+                }
+            })
+                .then(res => res.text())
+                .then(text => {
+                    this.hcaptchaVersion = text.split("assetUrl")[1].split("https://newassets.hcaptcha.com/captcha/v1/")[1].split("/static")[0]
+                })
+        ])
+
+        this.initialized = true
+        await this._log("DONE","HCaptcha Solver Initialized Successfully")
+    }
     async solve(rqdata){
+        if(!this.initialized){
+            this.initPromise = this.init()
+            await this.initPromise
+        }
         let captcha = await this._getCaptcha(rqdata)
         if(captcha.generated_pass_UUID) return {status:1,key:captcha.generated_pass_UUID}
         if(!captcha.key) return {status:0}
@@ -164,7 +194,8 @@ module.exports = class HCaptchaSolver{
 
         let recognizedImages
 
-        let postImages = await fetch(`https://${this.keyType}.nocaptchaai.com/api/solve`,
+        // let postImages = await fetch(`https://${this.keyType}.nocaptchaai.com/api/solve`,
+        let postImages = await fetch(this.solveEndpoint,
         {
             method:"POST",
             headers:{
@@ -198,7 +229,7 @@ module.exports = class HCaptchaSolver{
         }
         
         for(let i = 0;i < tasklist.length;i++){
-            answers[tasklist[i].task_key] = recognizedImages.includes(i.toString()) ? "true":"false"
+            answers[tasklist[i].task_key] = recognizedImages.includes(Number(i)) ? "true":"false"
         }
         await this._log("DONE","Images Retrieved!")
     
