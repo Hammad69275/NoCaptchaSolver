@@ -229,7 +229,7 @@ module.exports = class HCaptchaSolver{
         }
         
         for(let i = 0;i < tasklist.length;i++){
-            answers[tasklist[i].task_key] = recognizedImages.includes(i.toString()) ? "true":"false"
+            answers[tasklist[i].task_key] = recognizedImages.includes(Number(i)) ? "true":"false"
         }
         await this._log("DONE","Images Retrieved!")
     
