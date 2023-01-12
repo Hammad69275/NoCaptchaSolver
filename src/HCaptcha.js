@@ -5,15 +5,14 @@ const {Builder} = require('selenium-webdriver');
 
 module.exports = class HCaptchaSolver{
     
-    constructor(UID,API_KEY,USER_AGENT,SITE_KEY,SITE_URL,ENABLE_LOGGER,LOGGER_FUNCTION){
+    constructor(API_KEY,USER_AGENT,SITE_KEY,SITE_URL,ENABLE_LOGGER,LOGGER_FUNCTION){
         
-        this.uid = UID
         this.key = API_KEY
         this.userAgent = USER_AGENT
         this.siteurl = SITE_URL
         this.sitekey = SITE_KEY
         this.initialized = false
-        this.httpHeaders = { uid:UID,apikey:API_KEY }
+        this.httpHeaders = { apikey:API_KEY }
         this.hsw = null
         this.isLoggingEnabled = ENABLE_LOGGER || false,
         this.logFunction = LOGGER_FUNCTION
@@ -200,7 +199,6 @@ module.exports = class HCaptchaSolver{
             method:"POST",
             headers:{
                 "Content-type": "application/json",
-                uid:this.uid,
                 apikey:this.key
             },
             body:JSON.stringify(payload)
