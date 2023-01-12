@@ -16,7 +16,7 @@
 ```js
 const {HCaptchaSolver} = require("nocaptchasolver")
 
-const Solver = new HCaptchaSolver(UID,API_KEY,USER_AGENT,SITE_KEY,SITE_URL,ENABLE_LOGGER,LOGGER_FUNCTION)
+const Solver = new HCaptchaSolver(API_KEY,USER_AGENT,SITE_KEY,SITE_URL,ENABLE_LOGGER,LOGGER_FUNCTION)
 
 ```
 
@@ -61,7 +61,7 @@ Following Code Examples Demonstrate Their Working
 ```js
 const {HCaptchaSolver} = require("nocaptchasolver")
 
-const solver = new HCaptchaSolver("ccbf7ee84db748a2b4aad654112da128","free-api-b0ec566e....","(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com",true)
+const solver = new HCaptchaSolver("free-api-b0ec566e....","(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com",true)
 
 async function main(){
     let token = await solver.solve()
@@ -84,7 +84,7 @@ const logger = (type,message) => {
     Terminal(`[ ${type == "DONE" ? `^g${type + ` `.repeat("PROCESSING".length - type.length)}^` : `^r${type}^` } ] ${message}\n`)
 }
 
-const solver = new HCaptchaSolver("ccbf7ee84db748a2b4aad654112da128","free-api-b0ec566e....","(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com",true,logger)
+const solver = new HCaptchaSolver("free-api-b0ec566e....","(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com",true,logger)
 
 async function main(){
     let token = await solver.solve()
@@ -101,7 +101,7 @@ main()
 ```js
 const {HCaptchaSolver} = require("nocaptchasolver")
 
-const Solver = new HCaptchaSolver("ccbf7ee84db748a2b4aad654112da128","free-api-b0ec566e....","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com")
+const Solver = new HCaptchaSolver("free-api-b0ec566e....","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com")
 
 async function main()
 { 
@@ -115,4 +115,4 @@ main() // { status:1,key:"F0_ey......" }
 
 <h2>API</h2>
 
-Register on https://nocaptchaai.com/register and join their server to get the API Key and UID
+Register on https://nocaptchaai.com/register and join their server to get the API Key
