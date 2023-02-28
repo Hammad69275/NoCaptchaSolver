@@ -16,7 +16,17 @@
 ```js
 const {HCaptchaSolver} = require("nocaptchasolver")
 
-const Solver = new HCaptchaSolver(API_KEY,USER_AGENT,SITE_KEY,SITE_URL,ENABLE_LOGGER,LOGGER_FUNCTION)
+const config = {
+    apiKey,
+    userAgent,
+    siteKey,
+    siteURL,
+    enableLogger,
+    loggerFunction,
+    delay // in milliseconds (default is 7000ms)
+}
+
+const Solver = new HCaptchaSolver(config)
 
 ```
 
@@ -61,7 +71,18 @@ Following Code Examples Demonstrate Their Working
 ```js
 const {HCaptchaSolver} = require("nocaptchasolver")
 
-const solver = new HCaptchaSolver("free-api-b0ec566e....","(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com",true)
+
+const config = {
+    apiKey:"free-api-b0ec566e....",
+    userAgent:"(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36",
+    siteKey:"a9b5fb07-92ff-493f-86fe-352a2803b3df",
+    siteURL:"discord.com",
+    enableLogger:true,
+    delay:2000
+}
+
+
+const solver = new HCaptchaSolver(config)
 
 async function main(){
     let token = await solver.solve()
@@ -84,7 +105,12 @@ const logger = (type,message) => {
     Terminal(`[ ${type == "DONE" ? `^g${type + ` `.repeat("PROCESSING".length - type.length)}^` : `^r${type}^` } ] ${message}\n`)
 }
 
-const solver = new HCaptchaSolver("free-api-b0ec566e....","(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com",true,logger)
+const config = {
+    ...config,
+    loggerFunction:logger
+}
+
+const solver = new HCaptchaSolver(config)
 
 async function main(){
     let token = await solver.solve()
@@ -101,7 +127,7 @@ main()
 ```js
 const {HCaptchaSolver} = require("nocaptchasolver")
 
-const Solver = new HCaptchaSolver("free-api-b0ec566e....","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36","a9b5fb07-92ff-493f-86fe-352a2803b3df","discord.com")
+const Solver = new HCaptchaSolver(config)
 
 async function main()
 { 
