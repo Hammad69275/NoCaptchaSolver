@@ -1,6 +1,6 @@
 {
   "name": "nocaptchasolver",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Solve HCaptcha Challenges With The Power of NoCaptcha's AI Recognition!",
   "main": "index.js",
   "scripts": {
